@@ -2,9 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 using TMPro;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Localization.LocalizationTableCollection;
 
 public class SetGameCells : MonoBehaviour
 {
@@ -19,7 +22,7 @@ public class SetGameCells : MonoBehaviour
     private int[,] unsolvedBoard;
     public int numNonZeroVars = 22;
     [SerializeField] Sprite[] numberSprits;
-    [SerializeField] Button[] inputButtons;
+    // [SerializeField] Button[] inputButtons;
 
     void Start()
     {
@@ -54,11 +57,11 @@ public class SetGameCells : MonoBehaviour
                 cell.transform.SetParent(gameObject.transform);
                 Button button = cell.GetComponentInChildren<Button>();
                 cells[row, col] = cell;
+                button.GetComponent<CellProperties>().Value = unsolvedBoard[row, col];
                 if (unsolvedBoard[row, col] > 0)
                 {
                     button.GetComponentInChildren<Image>().sprite = numberSprits[unsolvedBoard[row, col]];
                     button.interactable = false;
-
                 }
                 else
                 {
@@ -87,11 +90,45 @@ public class SetGameCells : MonoBehaviour
             statrupXPosition = (cellWidth / 2) + BoarderDistane;
         }
     }
+    public void ShowGameStatus()
+    {
+        for (int row = 0; row < BoardSize; row++)
+        {
+            for (int col = 0; col < BoardSize; col++)
+            {
+                Button button = cells[row, col].GetComponentInChildren<Button>();
+                int CellValue = button.GetComponent<CellProperties>().Value;
+                var colors = button.colors;
+                if (CellValue == 0)
+                    colors.normalColor = Color.white;
+                else if (CellValue == solvedBoard[row, col])
+                    colors.normalColor = Color.green;
+                else
+                    colors.normalColor = Color.red;
 
+                button.colors = colors;
+            }
+        }
+    }
     private void SetSelectCell(int cellRow, int cellCol)
     {
+        //if (selectedRow > -1)
+        //{
+        //    //Resetting previous selected button
+        //    Button button = cells[selectedRow, selectedCol].GetComponentInChildren<Button>();
+        //    var colors = button.colors;
+        //    colors.normalColor = Color.white;
+        //    button.colors = colors;
+        //}
+
         selectedRow = cellRow;
         selectedCol = cellCol;
+
+        Button button1 = cells[selectedRow, selectedCol].GetComponentInChildren<Button>();
+        var colors1 = button1.colors;
+        colors1.normalColor = Color.yellow;
+        button1.colors = colors1;
+
     }
 
     public void OnInput(int inputNumber)
@@ -99,7 +136,14 @@ public class SetGameCells : MonoBehaviour
         if (selectedRow > -1)
         {
             Button button = cells[selectedRow, selectedCol].GetComponentInChildren<Button>();
+            //Resetging color after new input
+            var colors = button.colors;
+            colors.normalColor = Color.white;
+            button.colors = colors;
+            // Assgining new value image
             button.GetComponentInChildren<Image>().sprite = numberSprits[inputNumber];
+            // Assgining new value 
+            button.GetComponent<CellProperties>().Value = inputNumber;
         }
     }
 }
