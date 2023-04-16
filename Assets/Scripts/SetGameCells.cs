@@ -1,13 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Transactions;
-using TMPro;
-using UnityEditor.Experimental.GraphView;
+using Assets.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Localization.LocalizationTableCollection;
 
 public class SetGameCells : MonoBehaviour
 {
@@ -53,7 +46,7 @@ public class SetGameCells : MonoBehaviour
                 GameObject cell;
                 cell = Instantiate(CellPreFeb);
                 cell.transform.SetParent(gameObject.transform);
-                Button button = cell.GetComponentInChildren<Button>();
+                Image button = cell.GetComponent<Image>();
                 cells[row, col] = cell;
                 gameCellPrefebTransform = cell.GetComponent<RectTransform>();
                 gameCellPrefebTransform.anchoredPosition = new Vector3(statrupXPosition, -statrupYPosition, 0);
@@ -85,46 +78,27 @@ public class SetGameCells : MonoBehaviour
         {
             for (int col = 0; col < BoardSize; col++)
             {
-
-                Button button = cells[row, col].GetComponentInChildren<Button>();
+                    
+                Image button = cells[row, col].GetComponent<Image>();
                 var cellProperties = button.GetComponent<CellProperties>();
-                // button.onClick.RemoveAllListeners();
                 cellProperties.UnSolvedValue = unsolvedBoard[row, col];
                 cellProperties.SolvedValue = solvedBoard[row, col];
                 cellProperties.Row = row;
                 cellProperties.Column = col;
                 if (unsolvedBoard[row, col] > 0)
                 {
-                    button.GetComponentInChildren<Image>().sprite = numberSprits[unsolvedBoard[row, col]];
-                    button.interactable = false;
-                    button.GetComponentsInChildren<Image>().Where(x => x.gameObject.name == "Lock").FirstOrDefault().enabled = true;
+                    button.sprite = numberSprits[unsolvedBoard[row, col]];
+                    cellProperties.Status = CellStatus.ReadOnly;
                 }
                 else
                 {
-                //    int cellRow = row; // create new local variable and assign loop variable's value to it
-                //    int cellCol = col; //
-                    button.GetComponentInChildren<Image>().sprite = numberSprits[0];
-                    button.interactable = true;
-                    button.GetComponentsInChildren<Image>().Where(x => x.gameObject.name == "Lock").FirstOrDefault().enabled = false;
-                   // button.onClick.AddListener(() => SetSelectCell(cellRow, cellCol));
+                    button.sprite = numberSprits[0];
+                    cellProperties.Status = CellStatus.Normal;
                 }
             }
         }
     }
 
-    private void SetCellColor(GameObject cell, bool resetColor, int correctValue)
-    {
-        Button button = cell.GetComponentInChildren<Button>();
-        int CellValue = button.GetComponent<CellProperties>().Value;
-        var colors = button.colors;
-        if (resetColor || CellValue == 0)
-            colors.normalColor = Color.white;
-        else if (CellValue == correctValue)
-            colors.normalColor = Color.green;
-        else
-            colors.normalColor = Color.red;
-        button.colors = colors;
-    }
 
 
     public void ShowGameStatus()
@@ -133,44 +107,20 @@ public class SetGameCells : MonoBehaviour
         {
             for (int col = 0; col < BoardSize; col++)
             {
-                SetCellColor(cells[row, col], false, solvedBoard[row, col]);
+                var cellProperties = cells[row, col].GetComponent<CellProperties>();
+                cellProperties.CheckCellValue();
             }
         }
     }
-    private void SetSelectCell(int cellRow, int cellCol)
-    {
-        print($"132 Row is {cellRow} and column is {cellCol}");
-        if (selectedRow > -1)
-        {
-            SetCellColor(cells[cellRow, cellCol], true, 0);
-            //    Resetting previous selected button
-            //    Button button = cells[selectedRow, selectedCol].GetComponentInChildren<Button>();
-            //    var colors = button.colors;
-            //    colors.normalColor = Color.white;
-            //    button.colors = colors;
-        }
-        print($"141 Selected Row is {selectedRow} and column is {selectedCol}");
-        selectedRow = cellRow;
-        selectedCol = cellCol;
-        print($"144 Selected Row is {selectedRow} and column is {selectedCol}");
-        SetCellColor(cells[cellRow, cellCol], true, 0);
-        //Button button1 = cells[cellRow, cellCol].GetComponentInChildren<Button>();
-        //var colors1 = button1.colors;
-        //colors1.normalColor = Color.yellow;
-        //button1.colors = colors1;
 
-    }
 
-    public void OnInput(int inputNumber)
-    {
-        if (selectedRow > -1)
-        {
-            SetCellColor(cells[selectedRow, selectedCol], true, 0);
-            Button button = cells[selectedRow, selectedCol].GetComponentInChildren<Button>();
-            // Assgining new value image
-            button.GetComponentInChildren<Image>().sprite = numberSprits[inputNumber];
-            // Assgining new value 
-            button.GetComponent<CellProperties>().Value = inputNumber;
-        }
-    }
+    //public void OnInput(int inputNumber)
+    //{
+    //    if (selectedRow > -1)
+    //    {
+    //        Image button = cells[selectedRow, selectedCol].GetComponent<Image>();
+    //        // Assgining new value image
+    //        button.sprite = numberSprits[inputNumber];
+    //    }
+    //}
 }

@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Assets.Scripts
 {
-    internal enum CellStatus
+    public enum CellStatus
     {
-        Normal,
-        Selected,
-        Empty,
-        Correct,
-        InCorrect,
-        Fixed
+        Normal = 0,
+        ReadOnly = 1 ,
+        Selected = 2,
+        Correct = 3,
+        InCorrect = 4,
+
     }
 }

@@ -30,6 +30,10 @@ MonoBehaviour:
     m_Localized: Game Status
     m_Metadata:
       m_Items: []
+  - m_Id: 1487925058068480
+    m_Localized: Setings
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

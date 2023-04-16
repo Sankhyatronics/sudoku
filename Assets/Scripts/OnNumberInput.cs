@@ -1,18 +1,18 @@
+using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using static UnityEditor.Localization.LocalizationTableCollection;
 
 public class OnNumberInput : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private Sprite ValueImage;
+    public void SetCellValue(int value)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        Image button = GameManager.Instance.SelectedCell.GetComponent<Image>();
+        var cellProperties = button.GetComponent<CellProperties>();
+        cellProperties.UnSolvedValue = value;
+        button.sprite = ValueImage;
     }
 }

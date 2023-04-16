@@ -27,6 +27,10 @@ MonoBehaviour:
     m_Key: STATUS_GAME
     m_Metadata:
       m_Items: []
+  - m_Id: 1487925058068480
+    m_Key: SETTINGS
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
