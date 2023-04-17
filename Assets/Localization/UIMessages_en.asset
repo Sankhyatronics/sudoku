@@ -19,19 +19,23 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 11644133376
-    m_Localized: New Game
+    m_Localized: New
     m_Metadata:
       m_Items: []
   - m_Id: 158335721472
-    m_Localized: Restart
+    m_Localized: Reset
     m_Metadata:
       m_Items: []
   - m_Id: 3153811169280
-    m_Localized: Game Status
+    m_Localized: Status
     m_Metadata:
       m_Items: []
   - m_Id: 1487925058068480
     m_Localized: Setings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1494005829984256
+    m_Localized: Save
     m_Metadata:
       m_Items: []
   references:

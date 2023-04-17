@@ -19,19 +19,23 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 11644133376
-    m_Localized: "\u0928\u092F\u093E \u0916\u0947\u0932"
+    m_Localized: New
     m_Metadata:
       m_Items: []
   - m_Id: 158335721472
-    m_Localized: "\u092A\u0941\u0928\u0903 \u0906\u0930\u0902\u092D"
+    m_Localized: Reset
     m_Metadata:
       m_Items: []
   - m_Id: 3153811169280
-    m_Localized: "\u0935\u0938\u094D\u0924\u0941-\u0938\u094D\u0925\u093F\u0924\u093F"
+    m_Localized: Status
     m_Metadata:
       m_Items: []
   - m_Id: 1487925058068480
     m_Localized: Setings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1494005829984256
+    m_Localized: Save
     m_Metadata:
       m_Items: []
   references:

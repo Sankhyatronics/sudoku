@@ -8,9 +8,8 @@ public class SetGameCells : MonoBehaviour
     [SerializeField] private GameObject CellPreFeb;
     [SerializeField] float BoarderDistane = 8;
     [SerializeField] private int BoardSize;
-    private GameObject[,] cells;
-    private int selectedRow = -1;
-    private int selectedCol = -1;
+
+
     private int[,] solvedBoard;
     private int[,] unsolvedBoard;
     public int DifficultyLevel { get; set; }
@@ -31,7 +30,7 @@ public class SetGameCells : MonoBehaviour
         float panelWidth = panelReact.rect.width;
         float cellWidth = (panelWidth - (4 * BoarderDistane)) / BoardSize;
 
-        cells = new GameObject[BoardSize, BoardSize];
+        GameManager.Instance.cells = new GameObject[BoardSize, BoardSize];
         RectTransform gameCellPrefebTransform = CellPreFeb.GetComponent<RectTransform>();
         gameCellPrefebTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, cellWidth);
         gameCellPrefebTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, cellWidth);
@@ -47,7 +46,7 @@ public class SetGameCells : MonoBehaviour
                 cell = Instantiate(CellPreFeb);
                 cell.transform.SetParent(gameObject.transform);
                 Image button = cell.GetComponent<Image>();
-                cells[row, col] = cell;
+                GameManager.Instance.cells[row, col] = cell;
                 gameCellPrefebTransform = cell.GetComponent<RectTransform>();
                 gameCellPrefebTransform.anchoredPosition = new Vector3(statrupXPosition, -statrupYPosition, 0);
                 gameCellPrefebTransform.localScale = Vector3.one;
@@ -79,7 +78,7 @@ public class SetGameCells : MonoBehaviour
             for (int col = 0; col < BoardSize; col++)
             {
                     
-                Image button = cells[row, col].GetComponent<Image>();
+                Image button = GameManager.Instance.cells[row, col].GetComponent<Image>();
                 var cellProperties = button.GetComponent<CellProperties>();
                 cellProperties.UnSolvedValue = unsolvedBoard[row, col];
                 cellProperties.SolvedValue = solvedBoard[row, col];
@@ -93,34 +92,20 @@ public class SetGameCells : MonoBehaviour
                 else
                 {
                     button.sprite = numberSprits[0];
-                    cellProperties.Status = CellStatus.Normal;
+                    //cellProperties.Status = CellStatus.Normal;
                 }
             }
         }
     }
-
-
-
     public void ShowGameStatus()
     {
         for (int row = 0; row < BoardSize; row++)
         {
             for (int col = 0; col < BoardSize; col++)
             {
-                var cellProperties = cells[row, col].GetComponent<CellProperties>();
+                var cellProperties = GameManager.Instance.cells[row, col].GetComponent<CellProperties>();
                 cellProperties.CheckCellValue();
             }
         }
     }
-
-
-    //public void OnInput(int inputNumber)
-    //{
-    //    if (selectedRow > -1)
-    //    {
-    //        Image button = cells[selectedRow, selectedCol].GetComponent<Image>();
-    //        // Assgining new value image
-    //        button.sprite = numberSprits[inputNumber];
-    //    }
-    //}
 }

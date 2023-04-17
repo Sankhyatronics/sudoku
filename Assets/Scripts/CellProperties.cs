@@ -1,5 +1,4 @@
 using Assets.Scripts;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -10,6 +9,30 @@ public class CellProperties : MonoBehaviour, IPointerClickHandler
     public int UnSolvedValue { get; set; }
     public int SolvedValue { get; set; }
 
+    public HighlightedStatus HilightStatus
+    {
+        get { return _HilightStatus; }
+        set
+        {
+            _HilightStatus = value;
+            Image cell = gameObject.GetComponent<Image>();
+            switch (_HilightStatus)
+            {
+                case HighlightedStatus.Normal:
+                    {
+                        cell.GetComponent<RectTransform>().localScale = Vector3.one;
+                        break;
+                    }
+                case HighlightedStatus.Highlighted:
+                    {
+                        cell.GetComponent<RectTransform>().localScale = new Vector3(1.1f, 1.1f, 1.1f);
+                        break;
+                    }
+                default: break;
+            }
+        }
+    }
+    private HighlightedStatus _HilightStatus = HighlightedStatus.Normal;
     public CellStatus Status
     {
         get { return _Status; }
@@ -23,6 +46,7 @@ public class CellProperties : MonoBehaviour, IPointerClickHandler
 
                     {
                         cell.color = new Color32(255, 255, 255, 255);
+
                         break;
                     }
                 case CellStatus.ReadOnly:
@@ -47,10 +71,8 @@ public class CellProperties : MonoBehaviour, IPointerClickHandler
                         cell.color = new Color32(250, 221, 0, 255);
                         break;
                     }
-
                 default: break;
             }
-
         }
     }
     private CellStatus _Status = CellStatus.Normal;
@@ -65,10 +87,13 @@ public class CellProperties : MonoBehaviour, IPointerClickHandler
         {
             var PreviousCell = GameManager.Instance.SelectedCell;
             var cellProperties = PreviousCell.GetComponent<CellProperties>();
+            cellProperties.HilightStatus = HighlightedStatus.Normal;
             cellProperties.Status = CellStatus.Normal;
         }
         GameManager.Instance.SelectedCell = gameObject;
         this.Status = CellStatus.Selected;
+
+        HighlightRelatedCells();
     }
 
     public void CheckCellValue()
@@ -81,6 +106,28 @@ public class CellProperties : MonoBehaviour, IPointerClickHandler
         else
         {
             Status = CellStatus.InCorrect;
+        }
+    }
+    public void HighlightRelatedCells()
+    {
+        int size = GameManager.Instance.cells.GetLength(0);
+        for (int row = 0; row < size; row++)
+        {
+            for (int col = 0; col < size; col++)
+            {
+                var cellProperties = GameManager.Instance.cells[row, col].GetComponent<CellProperties>();
+                var selectionImage = GameManager.Instance.cells[row, col].GetComponentsInChildren<Image>(true);
+                if (cellProperties.Row == this.Row || cellProperties.Column == this.Column)
+                {
+                    cellProperties.HilightStatus = HighlightedStatus.Highlighted;
+                    selectionImage[1].enabled = true;
+                }
+                else
+                {
+                    cellProperties.HilightStatus = HighlightedStatus.Normal;
+                    selectionImage[1].enabled = false;
+                }
+            }
         }
     }
 }

@@ -6,13 +6,18 @@ using System.Threading.Tasks;
 
 namespace Assets.Scripts
 {
+    [Flags]
     public enum CellStatus
     {
-        Normal = 0,
-        ReadOnly = 1 ,
-        Selected = 2,
-        Correct = 3,
-        InCorrect = 4,
-
+        Normal = 1,
+        ReadOnly = 2,
+        Selected = 4,
+        Correct = 8,
+        InCorrect = 16
+    }
+    public enum HighlightedStatus
+    {
+        Normal = 1,
+        Highlighted = 2,
     }
 }
