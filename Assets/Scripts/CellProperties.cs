@@ -1,4 +1,6 @@
 using Assets.Scripts;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -8,104 +10,69 @@ public class CellProperties : MonoBehaviour, IPointerClickHandler
 {
     public int UnSolvedValue { get; set; }
     public int SolvedValue { get; set; }
-
+    private Animator cellAnimator;
+    private void Awake()
+    {
+        cellAnimator = GetComponent<Animator>();
+    }
+    //void Start()
+    //{
+    //    //We get the component and assign it to 
+    //    //the cellAnimator variable when the game starts 
+    //    cellAnimator = gameObject.GetComponent<Animator>();
+    //}
     public HighlightedStatus HilightStatus
     {
         get { return _HilightStatus; }
         set
         {
             _HilightStatus = value;
-            Image cell = gameObject.GetComponent<Image>();
-            switch (_HilightStatus)
-            {
-                case HighlightedStatus.Normal:
-                    {
-                        cell.GetComponent<RectTransform>().localScale = Vector3.one;
-                        break;
-                    }
-                case HighlightedStatus.Highlighted:
-                    {
-                        cell.GetComponent<RectTransform>().localScale = new Vector3(1.1f, 1.1f, 1.1f);
-                        break;
-                    }
-                default: break;
-            }
+            if (cellAnimator != null) cellAnimator.Play(_HilightStatus.ToString(), 1, 0f);
+            print("Highlight status change" + _HilightStatus.ToString());
         }
     }
-    private HighlightedStatus _HilightStatus = HighlightedStatus.Normal;
-    public CellStatus Status
+    private HighlightedStatus _HilightStatus = HighlightedStatus.NormalLight;
+    public CellState Status
     {
         get { return _Status; }
         set
         {
             _Status = value;
-            Image cell = gameObject.GetComponent<Image>();
-            switch (_Status)
-            {
-                case CellStatus.Normal:
-
-                    {
-                        cell.color = new Color32(255, 255, 255, 255);
-
-                        break;
-                    }
-                case CellStatus.ReadOnly:
-                    {
-                        cell.color = new Color32(219, 219, 219, 128);
-                        break;
-                    }
-                case CellStatus.Correct:
-
-                    {
-                        cell.color = new Color32(0, 250, 158, 255);
-                        break;
-                    }
-                case CellStatus.InCorrect:
-
-                    {
-                        cell.color = new Color32(255, 28, 32, 255);
-                        break;
-                    }
-                case CellStatus.Selected:
-                    {
-                        cell.color = new Color32(250, 221, 0, 255);
-                        break;
-                    }
-                default: break;
-            }
+            if (cellAnimator != null) cellAnimator.Play(_Status.ToString(), 0, 0f);
         }
     }
-    private CellStatus _Status = CellStatus.Normal;
+    private CellState _Status = CellState.Normal;
 
     public int Row { get; set; }
     public int Column { get; set; }
 
+    public int InnerGrid { get; set; }
     public void OnPointerClick(PointerEventData pointerEventData)
     {
-        if (Status == CellStatus.ReadOnly) return;
+        if (_Status == CellState.ReadOnly || _Status == CellState.ReadSelected) return;
         if (GameManager.Instance.SelectedCell != null)
         {
             var PreviousCell = GameManager.Instance.SelectedCell;
             var cellProperties = PreviousCell.GetComponent<CellProperties>();
-            cellProperties.HilightStatus = HighlightedStatus.Normal;
-            cellProperties.Status = CellStatus.Normal;
+            cellProperties.HilightStatus = HighlightedStatus.NormalLight;
+            cellProperties.Status = CellState.Normal;
         }
         GameManager.Instance.SelectedCell = gameObject;
-        this.Status = CellStatus.Selected;
-
+        this.Status = CellState.PrimarySelected;
+        //this.HilightStatus = HighlightedStatus.HighLight;
         HighlightRelatedCells();
     }
 
     public void CheckCellValue()
     {
-        if (_Status == CellStatus.ReadOnly) return;
+        if (_Status == CellState.ReadOnly || _Status == CellState.ReadSelected) return;
         if (this.SolvedValue == this.UnSolvedValue)
         {
-            Status = CellStatus.Correct;
+            Status = CellState.Correct;
         }
         else
         {
-            Status = CellStatus.InCorrect;
+            Status = CellState.InCorrect;
         }
     }
     public void HighlightRelatedCells()
@@ -116,18 +83,36 @@ public class CellProperties : MonoBehaviour, IPointerClickHandler
             for (int col = 0; col < size; col++)
             {
                 var cellProperties = GameManager.Instance.cells[row, col].GetComponent<CellProperties>();
-                var selectionImage = GameManager.Instance.cells[row, col].GetComponentsInChildren<Image>(true);
-                if (cellProperties.Row == this.Row || cellProperties.Column == this.Column)
+                //Skip status set for clicked cell
+                if (cellProperties.Status == CellState.PrimarySelected) continue;
+                // Checking quaified cells
+                if (cellProperties.Row == this.Row || cellProperties.Column == this.Column || cellProperties.InnerGrid == this.InnerGrid)
                 {
-                    cellProperties.HilightStatus = HighlightedStatus.Highlighted;
-                    selectionImage[1].enabled = true;
+                    if (cellProperties.Status == CellState.ReadSelected || cellProperties.Status == CellState.ReadOnly)
+                        cellProperties.Status = CellState.ReadSelected;
+                    else
+                        cellProperties.Status = CellState.SecondarySelected;
+                    //cellProperties.HilightStatus = HighlightedStatus.HighLight;
+                    //selectionImage[1].enabled = false;
                 }
                 else
                 {
-                    cellProperties.HilightStatus = HighlightedStatus.Normal;
-                    selectionImage[1].enabled = false;
+                    if (cellProperties.Status == CellState.ReadSelected || cellProperties.Status == CellState.ReadOnly)
+                        cellProperties.Status = CellState.ReadOnly;
+                    else
+                        cellProperties.Status = CellState.Normal;
+                    //cellProperties.HilightStatus = HighlightedStatus.NormalLight;
+                    //selectionImage[1].enabled = true;
                 }
             }
+        }
+    }
+    public void SetCellValue(int value, Sprite ValueImage)
+    {
+        if (this.Status == CellState.PrimarySelected)
+        {
+            UnSolvedValue = value;
+            this.GetComponent<Image>().sprite = ValueImage;
         }
     }
 }

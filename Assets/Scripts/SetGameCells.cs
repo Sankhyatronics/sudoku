@@ -15,7 +15,6 @@ public class SetGameCells : MonoBehaviour
     public int DifficultyLevel { get; set; }
     private int numNonZeroVars = 22;
     [SerializeField] Sprite[] numberSprits;
-    // [SerializeField] Button[] inputButtons;
 
     void Start()
     {
@@ -26,7 +25,7 @@ public class SetGameCells : MonoBehaviour
     private void CreateCells()
     {
         RectTransform panelReact = gameObject.GetComponent<RectTransform>();
-        //Calculating cell size basedon screen width
+        //Calculating cell size based on screen width
         float panelWidth = panelReact.rect.width;
         float cellWidth = (panelWidth - (4 * BoarderDistane)) / BoardSize;
 
@@ -37,15 +36,12 @@ public class SetGameCells : MonoBehaviour
 
         float statrupXPosition = (cellWidth / 2) + BoarderDistane;
         float statrupYPosition = statrupXPosition;
-
         for (int row = 0; row < BoardSize; row++)
         {
             for (int col = 0; col < BoardSize; col++)
             {
-                GameObject cell;
-                cell = Instantiate(CellPreFeb);
+                GameObject cell = Instantiate(CellPreFeb);
                 cell.transform.SetParent(gameObject.transform);
-                Image button = cell.GetComponent<Image>();
                 GameManager.Instance.cells[row, col] = cell;
                 gameCellPrefebTransform = cell.GetComponent<RectTransform>();
                 gameCellPrefebTransform.anchoredPosition = new Vector3(statrupXPosition, -statrupYPosition, 0);
@@ -73,28 +69,37 @@ public class SetGameCells : MonoBehaviour
             solvedBoard = boardGenerator.GenerateSolved();
             unsolvedBoard = boardGenerator.GenerateUnSolved(numNonZeroVars);
         }
+        int GridRow = 0;
+        int GridCol;
         for (int row = 0; row < BoardSize; row++)
         {
+            GridCol = GridRow;
             for (int col = 0; col < BoardSize; col++)
             {
-                    
-                Image button = GameManager.Instance.cells[row, col].GetComponent<Image>();
-                var cellProperties = button.GetComponent<CellProperties>();
+                Image cellImage = GameManager.Instance.cells[row, col].GetComponent<Image>();
+                var cellProperties = cellImage.GetComponent<CellProperties>();
                 cellProperties.UnSolvedValue = unsolvedBoard[row, col];
                 cellProperties.SolvedValue = solvedBoard[row, col];
                 cellProperties.Row = row;
                 cellProperties.Column = col;
+                cellProperties.InnerGrid = GridCol;
+                //cellProperties.HilightStatus = HighlightedStatus.Normal;
                 if (unsolvedBoard[row, col] > 0)
                 {
-                    button.sprite = numberSprits[unsolvedBoard[row, col]];
-                    cellProperties.Status = CellStatus.ReadOnly;
+                    cellImage.sprite = numberSprits[unsolvedBoard[row, col]];
+                    cellProperties.Status = CellState.ReadOnly;
                 }
                 else
                 {
-                    button.sprite = numberSprits[0];
-                    //cellProperties.Status = CellStatus.Normal;
+                    cellImage.sprite = numberSprits[0];
+                    cellProperties.Status = CellState.Normal;
                 }
+                if (col > 0 && (col + 1) % 3 == 0)
+                    GridCol++;
+
             }
+            if (row > 0 && (row + 1) % 3 == 0)
+                GridRow = GridRow + 3;
         }
     }
     public void ShowGameStatus()

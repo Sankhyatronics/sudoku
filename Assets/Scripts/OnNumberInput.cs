@@ -10,9 +10,14 @@ public class OnNumberInput : MonoBehaviour
     [SerializeField] private Sprite ValueImage;
     public void SetCellValue(int value)
     {
-        Image button = GameManager.Instance.SelectedCell.GetComponent<Image>();
-        var cellProperties = button.GetComponent<CellProperties>();
-        cellProperties.UnSolvedValue = value;
-        button.sprite = ValueImage;
+
+        var cellProperties = GameManager.Instance.SelectedCell.GetComponent<CellProperties>();
+        //var cellProperties = button.GetComponent<CellProperties>();
+        if (cellProperties != null)
+        {
+            cellProperties.SetCellValue(value, ValueImage);
+            //cellProperties.UnSolvedValue = value;
+            //button.sprite = ValueImage;
+        }
     }
 }
