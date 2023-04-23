@@ -1,4 +1,6 @@
 using Assets.Scripts;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -64,10 +66,7 @@ public class SetGameCells : MonoBehaviour
     {
         if (isNew)
         {
-            var boardGenerator = new SudokuBoardGenerator();
-            boardGenerator.BoardSize = BoardSize;
-            solvedBoard = boardGenerator.GenerateSolved();
-            unsolvedBoard = boardGenerator.GenerateUnSolved(numNonZeroVars);
+            LoadGameData();
         }
         int GridRow = 0;
         int GridCol;
@@ -83,15 +82,18 @@ public class SetGameCells : MonoBehaviour
                 cellProperties.Row = row;
                 cellProperties.Column = col;
                 cellProperties.InnerGrid = GridCol;
-                //cellProperties.HilightStatus = HighlightedStatus.Normal;
+
+                //Setting read only cells value
                 if (unsolvedBoard[row, col] > 0)
                 {
                     cellImage.sprite = numberSprits[unsolvedBoard[row, col]];
                     cellProperties.Status = CellState.ReadOnly;
                 }
+                // Setting user filled value
                 else
                 {
-                    cellImage.sprite = numberSprits[0];
+                    int CellValue = (GameManager.Instance.userInputValues[row, col] > 0) ? GameManager.Instance.userInputValues[row, col] : 0;
+                    cellImage.sprite = numberSprits[CellValue];
                     cellProperties.Status = CellState.Normal;
                 }
                 if (col > 0 && (col + 1) % 3 == 0)
@@ -110,6 +112,53 @@ public class SetGameCells : MonoBehaviour
             {
                 var cellProperties = GameManager.Instance.cells[row, col].GetComponent<CellProperties>();
                 cellProperties.CheckCellValue();
+            }
+        }
+    }
+    public void SaveGameData()
+    {
+        // Create a dictionary to hold both arrays
+        Dictionary<string, int[,]> dictionary = new Dictionary<string, int[,]>();
+        dictionary.Add("solvedBoard", solvedBoard);
+        dictionary.Add("unsolvedBoard", unsolvedBoard);
+        dictionary.Add("userInputValues", GameManager.Instance.userInputValues);
+
+        // Serialize the dictionary to JSON
+        string json = JsonConvert.SerializeObject(dictionary);
+
+        // Save the JSON string to PlayerPrefs
+        PlayerPrefs.SetString("SudokuGameData", json);
+    }
+
+    private void LoadGameData()
+    {
+        try
+        {
+            // Retrieve the JSON string from PlayerPrefs
+            string json = PlayerPrefs.GetString("SudokuGameData");
+
+            // Deserialize the JSON string to a dictionary
+            Dictionary<string, int[,]> dictionary = JsonConvert.DeserializeObject<Dictionary<string, int[,]>>(json);
+
+            // Get the arrays from the dictionary
+            solvedBoard = dictionary["solvedBoard"];
+            unsolvedBoard = dictionary["unsolvedBoard"];
+            GameManager.Instance.userInputValues = dictionary["userInputValues"];
+
+        }
+        catch
+        {
+            var boardGenerator = new SudokuBoardGenerator();
+            boardGenerator.BoardSize = BoardSize;
+            solvedBoard = boardGenerator.GenerateSolved();
+            unsolvedBoard = boardGenerator.GenerateUnSolved(numNonZeroVars);
+            GameManager.Instance.userInputValues = new int[BoardSize, BoardSize];
+            for (int i = 0; i < BoardSize; i++)
+            {
+                for (int j = 0; j < BoardSize; j++)
+                {
+                    GameManager.Instance.userInputValues[i, j] = 0;
+                }
             }
         }
     }

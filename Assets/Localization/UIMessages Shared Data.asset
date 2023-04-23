@@ -35,6 +35,10 @@ MonoBehaviour:
     m_Key: SAVE_GAME
     m_Metadata:
       m_Items: []
+  - m_Id: 3899457322737664
+    m_Key: APP_NAME
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

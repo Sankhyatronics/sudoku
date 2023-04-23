@@ -38,6 +38,10 @@ MonoBehaviour:
     m_Localized: Save
     m_Metadata:
       m_Items: []
+  - m_Id: 3899457322737664
+    m_Localized: Sudoku
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

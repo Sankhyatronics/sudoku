@@ -1,11 +1,7 @@
 using Assets.Scripts;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-
-
 public class CellProperties : MonoBehaviour, IPointerClickHandler
 {
     public int UnSolvedValue { get; set; }
@@ -15,23 +11,16 @@ public class CellProperties : MonoBehaviour, IPointerClickHandler
     {
         cellAnimator = GetComponent<Animator>();
     }
-    //void Start()
+    //public HighlightedStatus HilightStatus
     //{
-    //    //We get the component and assign it to 
-    //    //the cellAnimator variable when the game starts 
-    //    cellAnimator = gameObject.GetComponent<Animator>();
+    //    get { return _HilightStatus; }
+    //    set
+    //    {
+    //        _HilightStatus = value;
+    //        if (cellAnimator != null) cellAnimator.Play(_HilightStatus.ToString(), 1, 0f);
+    //    }
     //}
-    public HighlightedStatus HilightStatus
-    {
-        get { return _HilightStatus; }
-        set
-        {
-            _HilightStatus = value;
-            if (cellAnimator != null) cellAnimator.Play(_HilightStatus.ToString(), 1, 0f);
-            print("Highlight status change" + _HilightStatus.ToString());
-        }
-    }
-    private HighlightedStatus _HilightStatus = HighlightedStatus.NormalLight;
+    //private HighlightedStatus _HilightStatus = HighlightedStatus.NormalLight;
     public CellState Status
     {
         get { return _Status; }
@@ -54,7 +43,7 @@ public class CellProperties : MonoBehaviour, IPointerClickHandler
         {
             var PreviousCell = GameManager.Instance.SelectedCell;
             var cellProperties = PreviousCell.GetComponent<CellProperties>();
-            cellProperties.HilightStatus = HighlightedStatus.NormalLight;
+            //cellProperties.HilightStatus = HighlightedStatus.NormalLight;
             cellProperties.Status = CellState.Normal;
         }
         GameManager.Instance.SelectedCell = gameObject;

@@ -1,9 +1,4 @@
-using Assets.Scripts;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using static UnityEditor.Localization.LocalizationTableCollection;
 
 public class OnNumberInput : MonoBehaviour
 {
@@ -16,6 +11,7 @@ public class OnNumberInput : MonoBehaviour
         if (cellProperties != null)
         {
             cellProperties.SetCellValue(value, ValueImage);
+            GameManager.Instance.userInputValues[cellProperties.Row, cellProperties.Column] = value;
             //cellProperties.UnSolvedValue = value;
             //button.sprite = ValueImage;
         }
