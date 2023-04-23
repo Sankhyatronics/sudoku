@@ -9,11 +9,5 @@
         ReadSelected = 4,
         Correct = 5,
         InCorrect = 6,
-
-    }
-    public enum HighlightedStatus
-    {
-        NormalLight = 1,
-        HighLight = 2,
     }
 }

@@ -34,12 +34,12 @@ MonoBehaviour:
     m_Localized: Setings
     m_Metadata:
       m_Items: []
-  - m_Id: 1494005829984256
-    m_Localized: Save
+  - m_Id: 4043323854151680
+    m_Localized: Sudoku
     m_Metadata:
       m_Items: []
-  - m_Id: 3899457322737664
-    m_Localized: Sudoku
+  - m_Id: 4048357392244736
+    m_Localized: < Back
     m_Metadata:
       m_Items: []
   references:

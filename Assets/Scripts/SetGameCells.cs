@@ -1,27 +1,22 @@
 using Assets.Scripts;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
-
 public class SetGameCells : MonoBehaviour
 {
 
     [SerializeField] private GameObject CellPreFeb;
     [SerializeField] float BoarderDistane = 8;
     [SerializeField] private int BoardSize;
-
-
-    private int[,] solvedBoard;
-    private int[,] unsolvedBoard;
-    public int DifficultyLevel { get; set; }
-    private int numNonZeroVars = 22;
     [SerializeField] Sprite[] numberSprits;
 
     void Start()
     {
         CreateCells();
-        SetGameBoardTiles(true);
+        LoadSavedData();
+        SetGameBoardTiles();
     }
 
     private void CreateCells()
@@ -62,12 +57,8 @@ public class SetGameCells : MonoBehaviour
         }
     }
 
-    public void SetGameBoardTiles(bool isNew)
+    private void SetGameBoardTiles()
     {
-        if (isNew)
-        {
-            LoadGameData();
-        }
         int GridRow = 0;
         int GridCol;
         for (int row = 0; row < BoardSize; row++)
@@ -77,24 +68,27 @@ public class SetGameCells : MonoBehaviour
             {
                 Image cellImage = GameManager.Instance.cells[row, col].GetComponent<Image>();
                 var cellProperties = cellImage.GetComponent<CellProperties>();
-                cellProperties.UnSolvedValue = unsolvedBoard[row, col];
-                cellProperties.SolvedValue = solvedBoard[row, col];
+
+                cellProperties.SolvedValue = GameManager.Instance.solvedBoard[row, col];
                 cellProperties.Row = row;
                 cellProperties.Column = col;
                 cellProperties.InnerGrid = GridCol;
 
                 //Setting read only cells value
-                if (unsolvedBoard[row, col] > 0)
+                if (GameManager.Instance.unsolvedBoard[row, col] > 0)
                 {
-                    cellImage.sprite = numberSprits[unsolvedBoard[row, col]];
+                    cellImage.sprite = numberSprits[GameManager.Instance.unsolvedBoard[row, col]];
                     cellProperties.Status = CellState.ReadOnly;
+                    cellProperties.UnSolvedValue = GameManager.Instance.unsolvedBoard[row, col];
                 }
                 // Setting user filled value
                 else
                 {
-                    int CellValue = (GameManager.Instance.userInputValues[row, col] > 0) ? GameManager.Instance.userInputValues[row, col] : 0;
+                    // Seting up cell value from saved data, or 0 for new game
+                    int CellValue = GameManager.Instance.userInputValues[row, col];
                     cellImage.sprite = numberSprits[CellValue];
                     cellProperties.Status = CellState.Normal;
+                    //cellProperties.UnSolvedValue = CellValue;
                 }
                 if (col > 0 && (col + 1) % 3 == 0)
                     GridCol++;
@@ -104,33 +98,23 @@ public class SetGameCells : MonoBehaviour
                 GridRow = GridRow + 3;
         }
     }
-    public void ShowGameStatus()
+
+    public void GenerateNewGameData()
     {
-        for (int row = 0; row < BoardSize; row++)
+        var boardGenerator = new SudokuBoardGenerator();
+        boardGenerator.BoardSize = BoardSize;
+        GameManager.Instance.solvedBoard = boardGenerator.GenerateSolved();
+        GameManager.Instance.unsolvedBoard = boardGenerator.GenerateUnSolved(GameManager.Instance.numNonZeroVars);
+        GameManager.Instance.userInputValues = new int[BoardSize, BoardSize];
+        for (int i = 0; i < BoardSize; i++)
         {
-            for (int col = 0; col < BoardSize; col++)
+            for (int j = 0; j < BoardSize; j++)
             {
-                var cellProperties = GameManager.Instance.cells[row, col].GetComponent<CellProperties>();
-                cellProperties.CheckCellValue();
+                GameManager.Instance.userInputValues[i, j] = 0;
             }
         }
     }
-    public void SaveGameData()
-    {
-        // Create a dictionary to hold both arrays
-        Dictionary<string, int[,]> dictionary = new Dictionary<string, int[,]>();
-        dictionary.Add("solvedBoard", solvedBoard);
-        dictionary.Add("unsolvedBoard", unsolvedBoard);
-        dictionary.Add("userInputValues", GameManager.Instance.userInputValues);
-
-        // Serialize the dictionary to JSON
-        string json = JsonConvert.SerializeObject(dictionary);
-
-        // Save the JSON string to PlayerPrefs
-        PlayerPrefs.SetString("SudokuGameData", json);
-    }
-
-    private void LoadGameData()
+    public void LoadSavedData()
     {
         try
         {
@@ -141,24 +125,45 @@ public class SetGameCells : MonoBehaviour
             Dictionary<string, int[,]> dictionary = JsonConvert.DeserializeObject<Dictionary<string, int[,]>>(json);
 
             // Get the arrays from the dictionary
-            solvedBoard = dictionary["solvedBoard"];
-            unsolvedBoard = dictionary["unsolvedBoard"];
+            GameManager.Instance.solvedBoard = dictionary["solvedBoard"];
+            GameManager.Instance.unsolvedBoard = dictionary["unsolvedBoard"];
             GameManager.Instance.userInputValues = dictionary["userInputValues"];
-
         }
         catch
         {
-            var boardGenerator = new SudokuBoardGenerator();
-            boardGenerator.BoardSize = BoardSize;
-            solvedBoard = boardGenerator.GenerateSolved();
-            unsolvedBoard = boardGenerator.GenerateUnSolved(numNonZeroVars);
-            GameManager.Instance.userInputValues = new int[BoardSize, BoardSize];
-            for (int i = 0; i < BoardSize; i++)
+            // if failed in saved data load, generate a fresh game
+            GenerateNewGameData();
+        }
+    }
+
+
+    public void LoadNewGame()
+    {
+        GenerateNewGameData();
+        SetGameBoardTiles();
+        GameManager.Instance.SaveGameData();
+    }
+
+    public void ResetBoard()
+    {
+        for (int i = 0; i < BoardSize; i++)
+        {
+            for (int j = 0; j < BoardSize; j++)
             {
-                for (int j = 0; j < BoardSize; j++)
-                {
-                    GameManager.Instance.userInputValues[i, j] = 0;
-                }
+                GameManager.Instance.userInputValues[i, j] = 0;
+            }
+        }
+        SetGameBoardTiles();
+        GameManager.Instance.SaveGameData();
+    }
+    public void ShowGameStatus()
+    {
+        for (int row = 0; row < BoardSize; row++)
+        {
+            for (int col = 0; col < BoardSize; col++)
+            {
+                var cellProperties = GameManager.Instance.cells[row, col].GetComponent<CellProperties>();
+                cellProperties.CheckCellValue();
             }
         }
     }

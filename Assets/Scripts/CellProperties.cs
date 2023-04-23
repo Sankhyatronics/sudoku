@@ -11,16 +11,6 @@ public class CellProperties : MonoBehaviour, IPointerClickHandler
     {
         cellAnimator = GetComponent<Animator>();
     }
-    //public HighlightedStatus HilightStatus
-    //{
-    //    get { return _HilightStatus; }
-    //    set
-    //    {
-    //        _HilightStatus = value;
-    //        if (cellAnimator != null) cellAnimator.Play(_HilightStatus.ToString(), 1, 0f);
-    //    }
-    //}
-    //private HighlightedStatus _HilightStatus = HighlightedStatus.NormalLight;
     public CellState Status
     {
         get { return _Status; }
@@ -43,12 +33,10 @@ public class CellProperties : MonoBehaviour, IPointerClickHandler
         {
             var PreviousCell = GameManager.Instance.SelectedCell;
             var cellProperties = PreviousCell.GetComponent<CellProperties>();
-            //cellProperties.HilightStatus = HighlightedStatus.NormalLight;
             cellProperties.Status = CellState.Normal;
         }
         GameManager.Instance.SelectedCell = gameObject;
         this.Status = CellState.PrimarySelected;
-        //this.HilightStatus = HighlightedStatus.HighLight;
         HighlightRelatedCells();
     }
 
@@ -81,8 +69,6 @@ public class CellProperties : MonoBehaviour, IPointerClickHandler
                         cellProperties.Status = CellState.ReadSelected;
                     else
                         cellProperties.Status = CellState.SecondarySelected;
-                    //cellProperties.HilightStatus = HighlightedStatus.HighLight;
-                    //selectionImage[1].enabled = false;
                 }
                 else
                 {
@@ -90,8 +76,6 @@ public class CellProperties : MonoBehaviour, IPointerClickHandler
                         cellProperties.Status = CellState.ReadOnly;
                     else
                         cellProperties.Status = CellState.Normal;
-                    //cellProperties.HilightStatus = HighlightedStatus.NormalLight;
-                    //selectionImage[1].enabled = true;
                 }
             }
         }

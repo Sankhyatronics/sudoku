@@ -31,12 +31,12 @@ MonoBehaviour:
     m_Key: SETTINGS
     m_Metadata:
       m_Items: []
-  - m_Id: 1494005829984256
-    m_Key: SAVE_GAME
+  - m_Id: 4043323854151680
+    m_Key: GAME_NAME
     m_Metadata:
       m_Items: []
-  - m_Id: 3899457322737664
-    m_Key: APP_NAME
+  - m_Id: 4048357392244736
+    m_Key: BACK
     m_Metadata:
       m_Items: []
   m_Metadata:

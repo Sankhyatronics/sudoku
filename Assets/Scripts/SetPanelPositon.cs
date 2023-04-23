@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SetPanelPositon : MonoBehaviour
 {
@@ -32,10 +30,13 @@ public class SetPanelPositon : MonoBehaviour
         var transformInputPanel = InputPanel.GetComponent<RectTransform>();
         transformInputPanel.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, InputPanelHeight);
         transformInputPanel.anchoredPosition = new Vector3(0, InputPanelHeight / 2, 0);
+        GridLayoutGroup grid = transformInputPanel.GetComponent<GridLayoutGroup>();
+        grid.cellSize = new Vector2(screenWidth / 4 - 20, InputPanelHeight / 3 - 20);
 
         ////Title panel should fill remaining space
         //var transformTitlePanel = TitlePanel.GetComponent<RectTransform>();
         //transformTitlePanel.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, InputPanelHeight);
         //transformTitlePanel.anchoredPosition = new Vector3(0, -InputPanelHeight / 2, 0);
+
     }
 }
