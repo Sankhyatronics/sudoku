@@ -33,9 +33,9 @@ public class SetPanelPositon : MonoBehaviour
         transformInputPanel.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, InputPanelHeight);
         transformInputPanel.anchoredPosition = new Vector3(0, InputPanelHeight / 2, 0);
 
-        //Input panel should fill remaining space
-        var transformTitlePanel = TitlePanel.GetComponent<RectTransform>();
-        transformTitlePanel.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, InputPanelHeight);
-        transformTitlePanel.anchoredPosition = new Vector3(0, -InputPanelHeight / 2, 0);
+        ////Title panel should fill remaining space
+        //var transformTitlePanel = TitlePanel.GetComponent<RectTransform>();
+        //transformTitlePanel.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, InputPanelHeight);
+        //transformTitlePanel.anchoredPosition = new Vector3(0, -InputPanelHeight / 2, 0);
     }
 }

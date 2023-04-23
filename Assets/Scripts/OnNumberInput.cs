@@ -1,18 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class OnNumberInput : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private Sprite ValueImage;
+    public void SetCellValue(int value)
     {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        var cellProperties = GameManager.Instance.SelectedCell.GetComponent<CellProperties>();
+        //var cellProperties = button.GetComponent<CellProperties>();
+        if (cellProperties != null)
+        {
+            cellProperties.SetCellValue(value, ValueImage);
+            GameManager.Instance.userInputValues[cellProperties.Row, cellProperties.Column] = value;
+            //cellProperties.UnSolvedValue = value;
+            //button.sprite = ValueImage;
+        }
     }
 }
